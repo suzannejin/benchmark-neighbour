@@ -1,9 +1,15 @@
+
+
+# stuff from original github
 extra_data/*
 !extra_data/README.md
-
-
-# History files
 .Rhistory
 .Rapp.history
-# RStudio files
 .Rproj.user/
+
+
+# nextflow temporary files
+nextflow/work
+nextflow/test
+nextflow/.nextflow*
+
