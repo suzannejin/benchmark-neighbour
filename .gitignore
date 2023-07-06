@@ -10,6 +10,8 @@ extra_data/*
 
 # nextflow temporary files
 nextflow/work
-nextflow/test
+nextflow/test*
 nextflow/.nextflow*
-
+nextflow/results
+nextflow/singularity_cache
+nextflow/log.txt

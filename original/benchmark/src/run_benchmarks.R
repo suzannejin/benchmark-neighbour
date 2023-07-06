@@ -328,58 +328,58 @@ for(job in consistency_plotting_jobs) run_job(job)
 # # Run Downsampling benchmarks#
 # ##############################
 
-# downsampling_plotting_jobs <- list()
-# deepseq_overlap_jobs <- list()
-# downsampling_jobs <- list()
-# # Loop over all datasets, seeds, transformations, knn and pca settings
-# for(dataset_name in di$input_data$dataset){
-#   for(seed in di$input_data$seed){
-#     dataset <- get_data_for_downsampling_benchmark(dataset_name, seed)
-#     if(seed == 1) {
-#       downsampling_plotting_jobs <- append(downsampling_plotting_jobs, list(plot_smartseq3_data(dataset_name, seed, dataset)))
-#       datasets_to_summarize <- append(datasets_to_summarize, list(list(name = dataset_name, dataset = dataset)))
-#     }
-#     for(pca_dim in di$knn_construction$pca){
-#       for(knn in di$knn_construction$knn){
-#           full_knn_transformations <- list()
-#           reduced_knn_transformations <- list()
-#           for(trans in di$knn_construction$transformations){
-#             stopifnot(length(trans$alpha) == 1)
-#             knn_full <- transform_deeply_sequenced_data(trans$name, dataset, data_mode = "full", pca_dim = pca_dim, knn = knn, alpha = trans$alpha)
-#             knn_reduced <- transform_deeply_sequenced_data(trans$name, dataset, data_mode = "reduced", pca_dim = pca_dim, knn = knn, alpha = trans$alpha)
-#             full_knn_transformations <- append(full_knn_transformations, list(knn_full))
-#             reduced_knn_transformations <- append(reduced_knn_transformations, list(knn_reduced))
-#           }
-#           if(seed == 1 && knn == 50) {
-#             if((dataset_name == "smartSeq3_siRNA_knockdown" && pca_dim == 50) ||
-#                (dataset_name != "smartSeq3_siRNA_knockdown" && pca_dim == 10)){
-#               doj <- calculate_downsampling_deepseq_overlap(full_knn_transformations,
-#                                                       dataset = dataset_name, seed = seed, pca_dim = pca_dim, knn = knn,
-#                                                       alphas = vapply(di$knn_construction$transformations, function(e) e$alpha, character(1L)),
-#                                                       transformations = vapply(di$knn_construction$transformations, function(e) e$name, character(1L)))
-#               deepseq_overlap_jobs <- append(deepseq_overlap_jobs, list(doj))    
-#             }
-#           }
-#           res <- calculate_downsampling_agreement(full_knn_transformations, reduced_knn_transformations,
-#                                                   dataset = dataset_name, seed = seed, pca_dim = pca_dim, knn = knn,
-#                                                   alphas = vapply(di$knn_construction$transformations, function(e) e$alpha, character(1L)),
-#                                                   transformations = vapply(di$knn_construction$transformations, function(e) e$name, character(1L)))
-#           downsampling_jobs <- append(downsampling_jobs, list(res))
-#       }
-#     }
-#   }
-#   message("Added all jobs for ", dataset_name)
-# }
+downsampling_plotting_jobs <- list()
+deepseq_overlap_jobs <- list()
+downsampling_jobs <- list()
+# Loop over all datasets, seeds, transformations, knn and pca settings
+for(dataset_name in di$input_data$dataset){
+  for(seed in di$input_data$seed){
+    dataset <- get_data_for_downsampling_benchmark(dataset_name, seed)
+    if(seed == 1) {
+      downsampling_plotting_jobs <- append(downsampling_plotting_jobs, list(plot_smartseq3_data(dataset_name, seed, dataset)))
+      datasets_to_summarize <- append(datasets_to_summarize, list(list(name = dataset_name, dataset = dataset)))
+    }
+    for(pca_dim in di$knn_construction$pca){
+      for(knn in di$knn_construction$knn){
+          full_knn_transformations <- list()
+          reduced_knn_transformations <- list()
+          for(trans in di$knn_construction$transformations){
+            stopifnot(length(trans$alpha) == 1)
+            knn_full <- transform_deeply_sequenced_data(trans$name, dataset, data_mode = "full", pca_dim = pca_dim, knn = knn, alpha = trans$alpha)
+            knn_reduced <- transform_deeply_sequenced_data(trans$name, dataset, data_mode = "reduced", pca_dim = pca_dim, knn = knn, alpha = trans$alpha)
+            full_knn_transformations <- append(full_knn_transformations, list(knn_full))
+            reduced_knn_transformations <- append(reduced_knn_transformations, list(knn_reduced))
+          }
+          if(seed == 1 && knn == 50) {
+            if((dataset_name == "smartSeq3_siRNA_knockdown" && pca_dim == 50) ||
+               (dataset_name != "smartSeq3_siRNA_knockdown" && pca_dim == 10)){
+              doj <- calculate_downsampling_deepseq_overlap(full_knn_transformations,
+                                                      dataset = dataset_name, seed = seed, pca_dim = pca_dim, knn = knn,
+                                                      alphas = vapply(di$knn_construction$transformations, function(e) e$alpha, character(1L)),
+                                                      transformations = vapply(di$knn_construction$transformations, function(e) e$name, character(1L)))
+              deepseq_overlap_jobs <- append(deepseq_overlap_jobs, list(doj))    
+            }
+          }
+          res <- calculate_downsampling_agreement(full_knn_transformations, reduced_knn_transformations,
+                                                  dataset = dataset_name, seed = seed, pca_dim = pca_dim, knn = knn,
+                                                  alphas = vapply(di$knn_construction$transformations, function(e) e$alpha, character(1L)),
+                                                  transformations = vapply(di$knn_construction$transformations, function(e) e$name, character(1L)))
+          downsampling_jobs <- append(downsampling_jobs, list(res))
+      }
+    }
+  }
+  message("Added all jobs for ", dataset_name)
+}
 
-# downsampling <- gather_downsampling_results(downsampling_jobs)
-# table(sapply(downsampling$dependencies, job_status))
-# # Store jobs and run them
-# saveRDS(downsampling, file.path("output/job_storage", "downsampling_job.RDS"))
-# downsampling <- run_job(downsampling, "normal")
-# saveRDS(downsampling_plotting_jobs, file.path("output/job_storage/downsampling_plotting_jobs.RDS"))
-# for(job in downsampling_plotting_jobs) run_job(job)
-# saveRDS(deepseq_overlap_jobs, file.path("output/job_storage/deepseq_overlap_jobs.RDS"))
-# for(job in deepseq_overlap_jobs) run_job(job)
+downsampling <- gather_downsampling_results(downsampling_jobs)
+table(sapply(downsampling$dependencies, job_status))
+# Store jobs and run them
+saveRDS(downsampling, file.path("output/job_storage", "downsampling_job.RDS"))
+downsampling <- run_job(downsampling, "normal")
+saveRDS(downsampling_plotting_jobs, file.path("output/job_storage/downsampling_plotting_jobs.RDS"))
+for(job in downsampling_plotting_jobs) run_job(job)
+saveRDS(deepseq_overlap_jobs, file.path("output/job_storage/deepseq_overlap_jobs.RDS"))
+for(job in deepseq_overlap_jobs) run_job(job)
 
 
 # ########################################

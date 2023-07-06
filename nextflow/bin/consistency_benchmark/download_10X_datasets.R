@@ -14,4 +14,4 @@ sce <- data_loaders[[pa$dataset]]()
 UMI <- as.matrix(assay(sce))
 
 message("Saving ", pa$dataset)
-saveRDS(UMI, file.path(pa$data_folder, pa$dataset))
+saveRDS(UMI, file.path(data_folder, paste0(pa$dataset, '.rds')))
