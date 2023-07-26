@@ -155,8 +155,8 @@ calculate_downsampling_agreement_for_stratification <- function(full_knns, reduc
   wrap_script("src/downsampling_benchmark/calculate_downsampling_agreement_for_stratification.R", 
               params = list(full_knn_result_ids = vapply(full_knns, function(e) e$result_id, character(1L)),
                             reduced_knn_result_ids = vapply(reduced_knns, function(e) e$result_id, character(1L)),
-                            dataset = dataset, seed = seed, 
-                            pca_dim = pca_dim, knn = knn, 
+                            dataset = dataset, seed = seed,
+                            pca_dim = pca_dim, knn = knn,
                             transformations = transformations, alphas = alphas),
               dependencies = c(full_knns, reduced_knns),
               duration = "0-01:00:00", memory = "60GB")
@@ -165,8 +165,8 @@ calculate_downsampling_agreement_for_stratification <- function(full_knns, reduc
 calculate_downsampling_deepseq_overlap <- function(full_knns, dataset, seed, pca_dim, knn, transformations, alphas){
   wrap_script("src/downsampling_benchmark/downsampling_deepseq_overlap.R", 
               params = list(full_knn_result_ids = vapply(full_knns, function(e) e$result_id, character(1L)),
-                            dataset = dataset, seed = seed, 
-                            pca_dim = pca_dim, knn = knn, 
+                            dataset = dataset, seed = seed,
+                            pca_dim = pca_dim, knn = knn,
                             transformations = transformations, alphas = alphas),
               dependencies = c(full_knns),
               duration = "0-00:30:00", memory = "60GB")
