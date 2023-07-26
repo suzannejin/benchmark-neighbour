@@ -134,7 +134,7 @@ consistency:
   
 downsampling:
   input_data: 
-    dataset: [mcSCRB, smartSeq3_fibroblasts] #, smartSeq3_fibroblasts_alt, smartSeq3_hek, smartSeq3_siRNA_knockdown]
+    dataset: [mcSCRB ] #smartSeq3_fibroblasts] #, smartSeq3_fibroblasts_alt, smartSeq3_hek, smartSeq3_siRNA_knockdown]
     seed: [1, 2] #, 3, 4, 5]
   knn_construction: 
     knn: [10, 50] #, 100]

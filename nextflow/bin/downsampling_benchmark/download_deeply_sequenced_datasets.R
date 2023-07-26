@@ -5,6 +5,8 @@ pa <- argparser::add_argument(pa, "--data_id", type = "character", help = "The G
 pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = 'the seed used for the simulation')
 pa <- argparser::add_argument(pa, "--working_dir", type = "character", help = "working directory")
 pa <- argparser::add_argument(pa, "--download_helper", type = "character", help = "Download helper functions")
+pa <- argparser::add_argument(pa, "--output", type = "character", help = "Path of the output file")
+
 pa <- argparser::parse_args(pa)
 
 set.seed(pa$seed)
@@ -30,4 +32,4 @@ UMI <- UMI[expressed_genes, expressed_cells]
 downsampled_UMI <- downsampled_UMI[expressed_genes, expressed_cells]
 
 # save data
-saveRDS(list(full = UMI, reduced = downsampled_UMI), file.path(pa$working_dir, paste0(pa$data_id, '_seed', pa$seed, '.rds')))
+saveRDS(list(full = UMI, reduced = downsampled_UMI), pa$output)

@@ -1,6 +1,8 @@
 
 pa <- argparser::arg_parser("Take simulated data and generate the tSNE and UMAP for plotting")
+pa <- argparser::add_argument(pa, "--input", type = "character", help = "The input data path")
 pa <- argparser::add_argument(pa, "--data_id", type = "character", help = "The input data id")
+pa <- argparser::add_argument(pa, "--output", type = "character", help = "The output data path")
 pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = "The seed that was used for the downsampling")
 pa <- argparser::add_argument(pa, "--working_dir", type = "character", help = "working directory.")
 pa <- argparser::add_argument(pa, "--transformation_helper", type = "character", help = "Transformation helper functions")
@@ -11,8 +13,8 @@ print(pa)
 source(pa$transformation_helper)
 
 # Get ground truth and simulated data
-counts_full <- readRDS(file.path(pa$working_dir, "/data", paste0(pa$data_id, '_seed', pa$seed, '.rds')))$full
-counts_reduced <- readRDS(file.path(pa$working_dir, "/data",  paste0(pa$data_id, '_seed', pa$seed, '.rds')))$reduced
+counts_full <- readRDS(pa$input)$full
+counts_reduced <- readRDS(pa$input)$reduced
 
 # get average cell totals
 sf_full <- MatrixGenerics::colSums2(counts_full)
@@ -48,4 +50,4 @@ res <- data.frame(name = pa$data_id, seed=pa$seed, cluster = clusters,
                   tsne_log_counts_reduced_axis1 = tsne_log_counts_reduced[,1], tsne_log_counts_reduced_axis2 = tsne_log_counts_reduced[,2],
                   pca_log_counts_full_axis1 = pca_log_counts_full[,1],         pca_log_counts_full_axis2 = pca_log_counts_full[,2],
                   pca_log_counts_reduced_axis1 = pca_log_counts_reduced[,1],   pca_log_counts_reduced_axis2 = pca_log_counts_reduced[,2])
-write.table(res, file.path(pa$working_dir, "cluster/", paste0(pa$data_id, '_seed', pa$seed, '.tsv')), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(res, pa$output, sep = "\t", row.names = FALSE, quote = FALSE)
