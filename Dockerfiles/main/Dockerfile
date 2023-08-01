@@ -21,17 +21,21 @@ RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.
 
 # Add ENV variables for Renv cache (not symlink)
 RUN mkdir /opt/renvcache && \
- echo RENV_PATHS_CACHE='/opt/renvcache' >> $(R RHOME)/etc/Renviron.site
+    echo RENV_PATHS_CACHE='/opt/renvcache' >> $(R RHOME)/etc/Renviron.site
 
 # set the project directory to a variable
-ENV RENV_DIR '/opt/benchmark-neighbour/benchmark'
+ENV RENV_DIR '/opt/benchmark-neighbour/original/benchmark'
 
 # restore R packages and move the symlinks
 RUN git clone https://github.com/suzannejin/benchmark-neighbour.git && \
     cd ${RENV_DIR} && \
     R -e "renv::restore()" && \
-    R -e "reticulate::install_miniconda()" && \
-    R -e "reticulate::virtualenv_install('normalisr_python_env', packages = 'normalisr')" && \
     mv ${RENV_DIR}/renv/library/R-4.1/x86_64-pc-linux-gnu /opt/Rlibsymlinks && \
     echo "R_LIBS=/opt/Rlibsymlinks" >> $(R RHOME)/etc/Renviron.site && \
+    cd /opt && \
     rm -rf /opt/benchmark-neighbour
+
+# install normalisr
+ENV WORKON_HOME '/opt/virtualenvs'
+RUN R -e "reticulate::install_miniconda(path = /opt/r-miniconda)" && \
+    R -e "reticulate::virtualenv_install('normalisr_python_env', packages = 'normalisr')" 
