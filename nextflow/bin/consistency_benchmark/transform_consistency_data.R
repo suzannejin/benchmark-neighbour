@@ -2,14 +2,15 @@
 
 
 pa <- argparser::arg_parser("Take a matrix and generate a KNN graph")
+pa <- argparser::add_argument(pa, "--input", type = "character", help = "Path to input .rds file")
+pa <- argparser::add_argument(pa, "--output_duration", type = "character", help = "Path to output duration file")
+pa <- argparser::add_argument(pa, "--output_knn", type = "character", help = "Path to output knn file")
+pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = 'the seed used for the simulation')
 pa <- argparser::add_argument(pa, "--transformation", type = "character", help = "The name of the transformation")
-pa <- argparser::add_argument(pa, "--data_id", type = "character", help = "The id of a file in output/results") 
+pa <- argparser::add_argument(pa, "--alpha", type = "character", default = "FALSE", help = "The alpha parameter. Ignored by some transformations.")
 pa <- argparser::add_argument(pa, "--knn", type = "numeric", help = "The number of k nearest neighbors that are considered")
 pa <- argparser::add_argument(pa, "--pca_dim", type = "numeric", help = "The dimensions for the pca transformation")
-pa <- argparser::add_argument(pa, "--alpha", type = "character", default = "FALSE", help = "The alpha parameter. Ignored by some transformations.")
-pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = 'the seed used for the simulation')
 pa <- argparser::add_argument(pa, "--transformation_helper", type = "character", help = "Transformation helper functions")
-pa <- argparser::add_argument(pa, "--working_dir", type = "character", help = "Working directory")
 pa <- argparser::parse_args(pa)
 
 print(pa)
@@ -25,7 +26,7 @@ source(pa$transformation_helper)
 ######### Start Transformation #######
 
 # read UMI matrix
-UMI <- readRDS(file.path(pa$working_dir, 'data/', paste0(pa$data_id, '.rds')))
+UMI <- readRDS(pa$input)
 
 # only consider the expressed cells and genes
 expressed_cells <- matrixStats::colSums2(UMI) > 0
@@ -67,6 +68,6 @@ duration <- system.time({
 
 # save results
 write.table(data.frame(name = names(duration), seconds = as.vector(duration)),
-            file.path(pa$working_dir, "duration/", paste0(pa$data_id, '.txt')), 
+            pa$output_duration, 
             sep = "\t", row.names = FALSE, quote = FALSE)
-saveRDS(list(KNN_1 = KNN_1, KNN_2 = KNN_2), file.path(pa$working_dir, "knn/", paste0(pa$data_id, '.rds')))
+saveRDS(list(KNN_1 = KNN_1, KNN_2 = KNN_2), pa$output_knn)

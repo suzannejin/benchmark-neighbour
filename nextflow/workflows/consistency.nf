@@ -17,18 +17,19 @@ workflow CONSISTENCY {
 
     /* step 2. transform consistency data and generate a KNN graph */
     GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK.out.data
+        .combine( Channel.fromList(params.consistency.input_data.seed) )
         .combine( Channel.fromList(params.consistency.knn_construction.transformations) )
         .map{ it -> [
             it[0],
             it[1],
-            it[2].name, 
-            it[2].alpha 
+            it[2],
+            it[3].name, 
+            it[3].alpha   // TODO check alpha parameters
         ]}
-        .transpose(by:3)
+        .transpose(by:4)
         .combine( Channel.fromList(params.consistency.knn_construction.knn) )
         .combine( Channel.fromList(params.consistency.knn_construction.pca) )
-        .combine( Channel.fromList(params.consistency.input_data.seed) )
-        .set{ data2transform2knn }
+        .set{ data2transform2knn }  
     TRANSFORM_CONSISTENCY_DATA(data2transform2knn)
 
 
