@@ -10,9 +10,10 @@ print(pa)
 source(pa$transformation_helper)
 
 # read count data
+# genes x cells
 counts <- readRDS(pa$input)
 
-# get average cell totals
+# get size factors = cell totals (column sums), with respect to the average
 sf <- MatrixGenerics::colSums2(counts)
 sf <- sf / mean(sf)
 

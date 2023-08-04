@@ -89,11 +89,11 @@ consistency:
       # - {name: pearson_analytic, alpha: ["0.05", "0", "TRUE"]} 
       - {name: sctransform, alpha: ["0.05", "0", "TRUE"]} 
       - {name: rand_quantile, alpha: ["0.05", "0", "TRUE"]} 
-      - {name: dino, alpha: ["FALSE"]}
+      # - {name: dino, alpha: ["FALSE"]}
       # - {name: normalisr_norm, alpha: ["FALSE"]}
       # - {name: sanity_map, alpha: ["FALSE"]}
       # - {name: sanity_dists, alpha: ["FALSE"]}
-      - {name: glmpca, alpha: ["FALSE", "0.05"]}
+      # - {name: glmpca, alpha: ["FALSE", "0.05"]}
       # - {name: newwave, alpha: ["TRUE"]}
       - {name: raw_counts, alpha: ["FALSE"]}
       - {name: scaled_raw_counts, alpha: ["FALSE"]}

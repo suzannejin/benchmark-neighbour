@@ -51,7 +51,7 @@ if(pa$alpha == "global"){
   stop("Cannot parse alpha=", alpha)
 }
 
-# get the average cell totals
+# get size factors = cell totals with respect to the average
 sf_1 <- MatrixGenerics::colSums2(UMI_1)
 sf_1 <- sf_1 / mean(sf_1)
 sf_2 <- MatrixGenerics::colSums2(UMI_2)

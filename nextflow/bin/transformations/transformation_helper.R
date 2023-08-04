@@ -151,30 +151,48 @@ sanity_distance <- function(directory, take_error_into_account = TRUE, signal_to
 
 
 z_score_rows <- function(x, center = TRUE, scale = TRUE){
+  # this function calculates z-score of each sample (column) by substracting the column mean and scaling by the column std
+  # (x - mean) / sd
+  # this is applied to each column, thus as many z-scores are obtained as number of cells or columns
   t(scale(t(x), center = center, scale = scale))
 }
 
 select_hvg <- function(x, n = 1000){
+  # selects high variance genes
   row_var <- MatrixGenerics::rowVars(x)
   x[rank(-row_var, ties.method = "first") <= 1000,,drop=FALSE]
 }
 
   
 logp1_fnc <- function(UMI, sf, alpha){
+  # this function:
+  # 1. scales each column by the size factor
+  # 2. calculates 1/sqrt(alpha) * log(4*alpha*norm_counts + 1), where alpha = 1 / (4 * pseudo_count)
+  #   In this case, since pseudo_count=1 --> alpha = 0.25. The resulting formula is equivalent to 2*log(norm_counts + 1)
   transformGamPoi::shifted_log_transform(UMI, pseudo_count = 1, size_factors = sf)
 }
 
 logp1_zscore_fnc <- function(UMI, sf, alpha){
+  # this function:
+  # 1. calculates 2*log(UMI/sf + 1)
+  # 2. calculates the z-score for each cell or column
   res <- logp1_fnc(UMI, sf, alpha)
   z_score_rows(res)
 }
 
 logp1_hvg_zscore_fnc <- function(UMI, sf, alpha){
+  # this function:
+  # 1. calculates 2*log(UMI/sf + 1)
+  # 2. selects HVG
+  # 3. calculates the z-score for each cell or column on the selected HVG
   res <- logp1_fnc(UMI, sf, alpha)
   z_score_rows(select_hvg(res))
 }
 
 logp1_hvg_fnc <- function(UMI, sf, alpha){
+  # this function:
+  # 1. calculates 2*log(UMI/sf + 1)
+  # 2. selects HVG
   res <- logp1_fnc(UMI, sf, alpha)
   select_hvg(res)
 }
@@ -192,15 +210,25 @@ logp1_size_normed_fnc <- function(UMI, sf, alpha){
 }
 
 logp_cpm_fnc  <- function(UMI, sf, alpha){
+  # this function calculates log(CPM + 1)
   colsums <- MatrixGenerics::colSums2(UMI)
   log1p(t(t(UMI) / colsums * 1e6))
 }
 
 logp_alpha_fnc  <- function(UMI, sf, alpha){
+  # this function:
+  # 1. scales each column by the size factor
+  # 2. calculates 1/sqrt(alpha) * log(4*alpha*norm_counts + 1)
+      # if alpha < 0.001 or alpha = FALSE -> alpha = 0.01
+      # if alpha = TRUE -> overdispersion is estimated for each gene, and then calculated accordingly
   transformGamPoi::shifted_log_transform(UMI, overdispersion = alpha, size_factors = sf, on_disk = FALSE)
 }
 
 acosh_fnc  <- function(UMI, sf, alpha){
+  # this function:
+  # 1. scales each column by the size factor
+  # 2. calcultes 1/sqrt(alpha) acosh(2 * alpha * x + 1), if alpha >> 0
+  #    calculates 2 * sqrt(x), if alpha ~ 0
   transformGamPoi::acosh_transform(UMI, overdispersion = alpha, size_factors = sf, on_disk = FALSE)
 }
 
