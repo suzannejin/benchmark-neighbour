@@ -12,7 +12,7 @@ workflow CONSISTENCY {
     GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK( Channel.fromList(params.consistency.input_data.dataset) )
 
     // plot t-SNE and UMAP
-    PLOT_10X_DATA( GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK.out.data )
+    // PLOT_10X_DATA( GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK.out.data )
 
 
     /* step 2. transform consistency data and generate a KNN graph */

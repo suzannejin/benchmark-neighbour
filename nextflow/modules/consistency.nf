@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 
 process GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK {
+    tag "$data_id"
 
     input:
     each data_id
@@ -40,6 +41,7 @@ process GET_10X_DATA_FOR_CONSISTENCY_BENCHMARK {
 }
 
 process PLOT_10X_DATA {
+    tag "$data_id"
 
     input:
     tuple val(data_id),
@@ -74,6 +76,7 @@ process PLOT_10X_DATA {
 }
 
 process TRANSFORM_CONSISTENCY_DATA {
+    tag "${data_id}-${seed}-${transformation}-${alpha}-${knn}-${pca_dim}"
 
     input: 
     tuple val(data_id),
@@ -140,6 +143,7 @@ process TRANSFORM_CONSISTENCY_DATA {
 }
 
 process CALCULATE_10X_CONSISTENCY {
+    tag "${data_id}-${seed}-${transformation}-${alpha}-${knn}-${pca_dim}"
 
     input:
     tuple val(data_id),

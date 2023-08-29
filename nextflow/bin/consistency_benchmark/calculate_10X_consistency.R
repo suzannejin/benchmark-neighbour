@@ -15,11 +15,11 @@ print(pa)
 
 KNNs <- readRDS(pa$input)
 stopifnot(all(dim(KNNs[[1]]) == dim(KNNs[[2]])))
-n_cells <- nrow(KNNs[[1]])
+n_genes <- nrow(KNNs[[1]])
 
 
-cons <- mean(sapply(seq_len(n_cells), function(cell_idx){
-  length(intersect(KNNs[[1]][cell_idx,], KNNs[[2]][cell_idx,]))
+cons <- mean(sapply(seq_len(n_genes), function(gene_idx){
+  length(intersect(KNNs[[1]][gene_idx,], KNNs[[2]][gene_idx,]))
 }))
 
 res <- tibble(mean_overlap = cons, dataset = pa$data_id, seed = pa$seed,

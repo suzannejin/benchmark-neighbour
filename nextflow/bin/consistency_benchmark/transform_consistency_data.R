@@ -34,10 +34,10 @@ expressed_genes <- matrixStats::rowSums2(UMI) > 0
 UMI <- UMI[expressed_genes, expressed_cells]
 
 # divide data into two halves randomly 
-first_gene_half <- sample(seq_len(nrow(UMI)), round(nrow(UMI)/2))
-second_gene_half <- setdiff(seq_len(nrow(UMI)), first_gene_half)
-UMI_1 <- UMI[first_gene_half,,drop=FALSE]
-UMI_2 <- UMI[second_gene_half,,drop=FALSE]
+first_cell_half <- sample(seq_len(ncol(UMI)), round(ncol(UMI)/2))
+second_cell_half <- setdiff(seq_len(ncol(UMI)), first_cell_half)
+UMI_1 <- UMI[,first_cell_half,drop=FALSE]
+UMI_2 <- UMI[,second_cell_half,drop=FALSE]
 
 # parse alpha
 alpha <- pa$alpha
@@ -61,7 +61,7 @@ sf_2 <- sf_2 / mean(sf_2)
 duration <- system.time({
   trans_dat1 <- all_transformations[[pa$transformation]](UMI_1, sf_1, alpha)
   trans_dat2 <- all_transformations[[pa$transformation]](UMI_2, sf_2, alpha)
-  
+
   KNN_1 <- make_knn_graph(pa$transformation, trans_dat1, pa$pca_dim, pa$knn)
   KNN_2 <- make_knn_graph(pa$transformation, trans_dat2, pa$pca_dim, pa$knn)
 })
