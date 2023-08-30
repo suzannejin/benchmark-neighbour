@@ -8,7 +8,7 @@ process GET_DATA_FOR_DOWNSAMPLING_BENCHMARK {
     output:
     tuple val(data_id),
           val(seed),
-          path("data/${data_id}.${seed}.rds"),
+          path("data/${data_id}+${seed}.rds"),
           emit: data
 
     script:
@@ -18,9 +18,9 @@ process GET_DATA_FOR_DOWNSAMPLING_BENCHMARK {
     Rscript ${projectDir}/bin/downsampling_benchmark/download_deeply_sequenced_datasets.R \
         --data_id $data_id \
         --seed $seed \
-        --working_dir . \
-        --download_helper $download_helper \
-        --output data/${data_id}.${seed}.rds 
+        --outdir data \
+        --output data/${data_id}+${seed}.rds \
+        --download_helper $download_helper 
     """
 
     stub:
@@ -29,10 +29,11 @@ process GET_DATA_FOR_DOWNSAMPLING_BENCHMARK {
     echo Rscript ${projectDir}/bin/downsampling_benchmark/download_deeply_sequenced_datasets.R \
         --data_id $data_id \
         --seed $seed \
-        --working_dir . \
-        --download_helper $download_helper
+        --outdir data \
+        --output data/${data_id}+${seed}.rds \
+        --download_helper $download_helper 
     mkdir data/
-    touch data/${data_id}.${seed}.rds
+    touch data/${data_id}+${seed}.rds
     """
 }
 
@@ -46,7 +47,7 @@ process PLOT_SMARTSEQ3_DATA {
     output:
     tuple val(data_id),
           val(seed),
-          path("cluster/${data_id}.${seed}.tsv")
+          path("cluster/${data_id}+${seed}.tsv")
 
     script:
     def transformation_helper = params.transformation_helper
@@ -55,24 +56,22 @@ process PLOT_SMARTSEQ3_DATA {
     Rscript ${projectDir}/bin/downsampling_benchmark/plot_smartseq3_data.R \
         --data_id $data_id \
         --seed $seed \
-        --working_dir . \
-        --transformation_helper $transformation_helper \
         --input $data \
-        --output cluster/${data_id}.${seed}.tsv
+        --output cluster/${data_id}+${seed}.tsv \
+        --transformation_helper $transformation_helper 
     """
 
     stub:
     def transformation_helper = params.transformation_helper
     """
-    echo Rscript ${projectDir}/bin/downsampling_benchmark/plot_smartseq3_data.R \
+    echo ${projectDir}/bin/downsampling_benchmark/plot_smartseq3_data.R \
         --data_id $data_id \
         --seed $seed \
-        --working_dir . \
-        --transformation_helper $transformation_helper \
         --input $data \
-        --output cluster/${data_id}.${seed}.tsv
+        --output cluster/${data_id}+${seed}.tsv \
+        --transformation_helper $transformation_helper 
     mkdir cluster
-    touch cluster/${data_id}.${seed}.tsv
+    touch cluster/${data_id}+${seed}.tsv
     """
 }
 
@@ -85,112 +84,139 @@ process TRANSFORM_DEEPLY_SEQUENCED_DATA {
           val (transformation),
           val (alpha),
           val (knn),
-          val (pca_dim),
-          val (mode)
+          val (pca_dim)
         
     output:
     tuple val (data_id),
           val (seed),
           val (transformation),
+          val (alpha),
           val (knn),
           val (pca_dim),
-          val (alpha),
-          val (mode),
-          path ("knn/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.rds"),
+          path ("knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.rds"),
+          path ("knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.rds"),
           emit: knn
     tuple val (data_id),
           val (seed),
           val (transformation),
+          val (alpha),
           val (knn),
           val (pca_dim),
-          val (alpha),
-          val (mode),
-          path ("duration/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.txt"),
+          path ("duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.txt"),
+          path ("duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.txt"),
           emit: duration
 
     script:
     def transformation_helper = params.transformation_helper
-
     """
     mkdir knn
     mkdir duration
     Rscript ${projectDir}/bin/downsampling_benchmark/transform_downsampling_data.R \
+        --input $input_file \
         --transformation $transformation \
+        --alpha $alpha \
         --knn $knn \
         --pca_dim $pca_dim \
-        --alpha $alpha \
-        --working_dir . \
-        --transformation_helper $transformation_helper \
-        --data_mode $mode \
+        --data_mode full \
+        --output_knn knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.rds  \
+        --output_duration duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.txt \
+        --transformation_helper $transformation_helper 
+    Rscript ${projectDir}/bin/downsampling_benchmark/transform_downsampling_data.R \
         --input $input_file \
-        --output_knn knn/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.rds  \
-        --output_duration duration/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.txt
+        --transformation $transformation \
+        --alpha $alpha \
+        --knn $knn \
+        --pca_dim $pca_dim \
+        --data_mode reduced \
+        --output_knn knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.rds  \
+        --output_duration duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.txt \
+        --transformation_helper $transformation_helper 
     """
 
     stub:
     def transformation_helper = params.transformation_helper
-
     """
     echo Rscript ${projectDir}/bin/downsampling_benchmark/transform_downsampling_data.R \
+        --input $input_file \
         --transformation $transformation \
+        --alpha $alpha \
         --knn $knn \
         --pca_dim $pca_dim \
-        --alpha $alpha \
-        --working_dir . \
-        --transformation_helper $transformation_helper \
-        --data_mode $mode \
+        --data_mode full \
+        --output_knn knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.rds  \
+        --output_duration duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.txt \
+        --transformation_helper $transformation_helper 
+    echo Rscript ${projectDir}/bin/downsampling_benchmark/transform_downsampling_data.R \
         --input $input_file \
-        --output_knn knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+${mode}.rds  \
-        --output_duration duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+${mode}.txt
+        --transformation $transformation \
+        --alpha $alpha \
+        --knn $knn \
+        --pca_dim $pca_dim \
+        --data_mode reduced \
+        --output_knn knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.rds  \
+        --output_duration duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.txt \
+        --transformation_helper $transformation_helper 
     mkdir knn
     mkdir duration
-    touch knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+${mode}.rds
-    touch duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+${mode}.txt
+    touch knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.rds 
+    touch knn/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.rds
+    touch duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+full.txt 
+    touch duration/${data_id}+${seed}+${transformation}+${knn}+${pca_dim}+${alpha}+reduced.txt
     """
 }
 
 process CALCULATE_DOWNSAMPLING_AGREEMENT {
+
     input:
     tuple val (data_id),
           val (seed),
-          val (transformation),
+          val (transformations),
+          val (alphas),
           val (knn),
           val (pca_dim),
-          val (alpha),
-          val (mode)
+          path(full_knns, stageAs: 'full_knns/*.rds'),
+          path(reduced_knns, stageAs: 'reduced_knns/*.rds')
 
     output:
+    tuple val (data_id),
+          val (seed),
+          val (knn),
+          val (pca_dim),
+          path("metric/${data_id}+${seed}+${knn}+${pca_dim}.tsv")
 
     script:
+    def transformations2 = transformations.join(" ")
+    def alphas2 = alphas.join(" ")
     """
-    mkdir results/downsampling/calculate
+    mkdir metric
     Rscript ${projectDir}/bin/downsampling_benchmark/calculate_downsampling_agreement.R \
+        --full_knns $full_knns \
+        --reduced_knns $reduced_knns \
         --data_id $data_id \
         --seed $seed \
-        --transformation $transformation \
+        --transformations $transformations2 \
+        --alphas $alphas2 \
         --knn $knn \
         --pca_dim $pca_dim \
-        --alpha $alpha \
-        --working_dir . \
-        --full_knn_result_ids `ls results/downsampling/knn/ | grep full` \
-        --reduced_knn_result_ids `ls results/downsampling/knn/ | grep reduced` \
-        --result_path results/downsampling/calculate/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.rds
+        --output metric/${data_id}+${seed}+${knn}+${pca_dim}.tsv
     """
+
     stub:
+    def transformations2 = transformations.join(" ")
+    def alphas2 = alphas.join(" ")
     """
-    mkdir results/downsampling/calculate
+    mkdir metric
     echo Rscript ${projectDir}/bin/downsampling_benchmark/calculate_downsampling_agreement.R \
+        --full_knns $full_knns \
+        --reduced_knns $reduced_knns \
         --data_id $data_id \
         --seed $seed \
-        --transformation $transformation \
+        --transformations $transformations2 \
+        --alphas $alphas2 \
         --knn $knn \
         --pca_dim $pca_dim \
-        --alpha $alpha \
-        --working_dir . \
-        --full_knn_result_ids `ls results/downsampling/knn/ | grep full` \
-        --reduced_knn_result_ids `ls results/downsampling/knn/ | grep reduced` \
-        --result_path results/downsampling/calculate/${data_id}.${seed}.${transformation}.${knn}.${pca_dim}.${alpha}.${mode}.rds
-        touch results/downsampling/calculate/stub.rds
+        --output metric/${data_id}+${seed}+${knn}+${pca_dim}.tsv
+    touch metric/${data_id}+${seed}+${knn}+${pca_dim}.tsv
     """
 
 }

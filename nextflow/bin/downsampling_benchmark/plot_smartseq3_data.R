@@ -1,10 +1,9 @@
 
 pa <- argparser::arg_parser("Take simulated data and generate the tSNE and UMAP for plotting")
-pa <- argparser::add_argument(pa, "--input", type = "character", help = "The input data path")
 pa <- argparser::add_argument(pa, "--data_id", type = "character", help = "The input data id")
-pa <- argparser::add_argument(pa, "--output", type = "character", help = "The output data path")
 pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = "The seed that was used for the downsampling")
-pa <- argparser::add_argument(pa, "--working_dir", type = "character", help = "working directory.")
+pa <- argparser::add_argument(pa, "--input", type = "character", help = "The input data path")
+pa <- argparser::add_argument(pa, "--output", type = "character", help = "The output data path")
 pa <- argparser::add_argument(pa, "--transformation_helper", type = "character", help = "Transformation helper functions")
 pa <- argparser::parse_args(pa)
 

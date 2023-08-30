@@ -57,6 +57,7 @@ make_knn_graph <- function(transformation, dat, pca_dim, k_nearest_neighbors){
     red_dat <- SingleCellExperiment::reducedDim(pca_res, "newWave")
     BiocNeighbors::findAnnoy(red_dat, k = k_nearest_neighbors, warn.ties = FALSE)$index
   }else{
+    # run dimension reduction if needed
     if(pca_dim >= nrow(dat) || pca_dim >= ncol(dat)){ 
       red_dat <- t(dat)
     }else if(pca_dim >= nrow(dat) / 2 || pca_dim >= ncol(dat) / 2){
@@ -64,6 +65,7 @@ make_knn_graph <- function(transformation, dat, pca_dim, k_nearest_neighbors){
     }else{
       red_dat <- BiocSingular::runPCA(t(dat), rank = pca_dim, get.rotation = FALSE, BSPARAM = BiocSingular::FastAutoParam())$x
     }
+    # compute neighbours
     BiocNeighbors::findAnnoy(red_dat, k = k_nearest_neighbors, warn.ties = FALSE)$index
   }
 }

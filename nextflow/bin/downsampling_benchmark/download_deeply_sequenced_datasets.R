@@ -3,17 +3,16 @@ library(SingleCellExperiment)
 pa <- argparser::arg_parser("Download 10X datasets from GEO dataset")
 pa <- argparser::add_argument(pa, "--data_id", type = "character", help = "The GSE id of the dataset") 
 pa <- argparser::add_argument(pa, "--seed", type = "numeric", help = 'the seed used for the simulation')
-pa <- argparser::add_argument(pa, "--working_dir", type = "character", help = "working directory")
-pa <- argparser::add_argument(pa, "--download_helper", type = "character", help = "Download helper functions")
+pa <- argparser::add_argument(pa, "--outdir", type = "character", help = "Folder where downloaded data should be stored")
 pa <- argparser::add_argument(pa, "--output", type = "character", help = "Path of the output file")
-
+pa <- argparser::add_argument(pa, "--download_helper", type = "character", help = "Download helper functions")
 pa <- argparser::parse_args(pa)
 
 set.seed(pa$seed)
 
 source(pa$download_helper)
 
-data_folder = pa$working_dir
+data_folder = pa$outdir
 
 # get data
 message("Get ", pa$data_id)

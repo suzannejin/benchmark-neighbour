@@ -1,14 +1,14 @@
 #We want a unique id, with nf we don't need different names for data and result
 pa <- argparser::arg_parser("Take a matrix and generate a KNN graph")
+pa <- argparser::add_argument(pa, "--input", type = "character", help = "Path of the input file.")
 pa <- argparser::add_argument(pa, "--transformation", type = "character", help = "The name of the transformation")
+pa <- argparser::add_argument(pa, "--alpha", type = "character", default = "FALSE", help = "The alpha parameter. Ignored by some transformations.")
 pa <- argparser::add_argument(pa, "--knn", type = "numeric", help = "The number of k nearest neighbors that are considered")
 pa <- argparser::add_argument(pa, "--pca_dim", type = "numeric", help = "The dimensions for the pca transformation")
-pa <- argparser::add_argument(pa, "--alpha", type = "character", default = "FALSE", help = "The alpha parameter. Ignored by some transformations.")
-pa <- argparser::add_argument(pa, "--transformation_helper", type = "character", help = "Transformation helper functions")
 pa <- argparser::add_argument(pa, "--data_mode", type = "character", help = "Either 'full' or 'reduced'")
-pa <- argparser::add_argument(pa, "--input", type = "character", help = "Path of the input file.")
 pa <- argparser::add_argument(pa, "--output_duration", type = "character", help = "Path of the output file (.txt)")
 pa <- argparser::add_argument(pa, "--output_knn", type = "character", help = "Path of the knn output file (.rds)")
+pa <- argparser::add_argument(pa, "--transformation_helper", type = "character", help = "Transformation helper functions")
 
 
 pa <- argparser::parse_args(pa)
